@@ -40,7 +40,8 @@ class Mutations::CreateProviderAndRequest < Mutations::BaseMutation
     if provider.valid? && request.valid?
       provider.save!
       request.save!
-      LinkCreator.create(request)
+      linked_token = LinkCreator.create_token(request)
+      ProviderMailer.with(linked_token: linked_token).request_created_email.deliver_later
       {
         provider: provider,
         request: request,
